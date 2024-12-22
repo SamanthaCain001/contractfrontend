@@ -30,7 +30,7 @@ function App() {
 
   const connectWallet = async () => {
     if (!window.ethereum) {
-      alert('请安装 MetaMask 或 Rainbow 钱包!');
+      alert('Please install MetaMask or Rainbow Wallet!');
       return;
     }
 
@@ -45,8 +45,8 @@ function App() {
       setAccount(address);
       updateBalance(provider, address);
     } catch (error) {
-      console.error('连接钱包失败:', error);
-      alert('连接钱包失败: ' + error.message);
+      console.error('Failed to connect wallet:', error);
+      alert('Failed to connect wallet: ' + error.message);
     }
   };
 
@@ -55,7 +55,7 @@ function App() {
       const balance = await provider.getBalance(address);
       setBalance(ethers.formatEther(balance));
     } catch (error) {
-      console.error('获取余额失败:', error);
+      console.error('Failed to get balance:', error);
     }
   };
 
@@ -69,11 +69,11 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Edge6 Frontend</h1>
-        <h2>Rainbow 钱包连接</h2>
+        <h2>Rainbow Wallet Connection</h2>
         
         {!account ? (
           <div>
-            <p>连接您的钱包开始使用</p>
+            <p>Connect your wallet to get started</p>
             <button 
               onClick={connectWallet}
               style={{
@@ -87,15 +87,15 @@ function App() {
                 marginTop: '20px'
               }}
             >
-              连接 Rainbow 钱包
+              Connect Rainbow Wallet
             </button>
           </div>
         ) : (
           <div style={{ textAlign: 'center', color: 'white' }}>
-            <p>✅ 钱包已连接</p>
-            <p><strong>地址:</strong> {account}</p>
+            <p>✅ Wallet Connected</p>
+            <p><strong>Address:</strong> {account}</p>
             {balance && (
-              <p><strong>余额:</strong> {parseFloat(balance).toFixed(4)} ETH</p>
+              <p><strong>Balance:</strong> {parseFloat(balance).toFixed(4)} ETH</p>
             )}
             <button 
               onClick={disconnectWallet}
@@ -109,16 +109,16 @@ function App() {
                 cursor: 'pointer'
               }}
             >
-              断开连接
+              Disconnect
             </button>
           </div>
         )}
         
         <div style={{ marginTop: '30px', fontSize: '14px', color: '#ccc' }}>
-          <p>支持的钱包:</p>
+          <p>Supported Wallets:</p>
           <p>• Rainbow Wallet</p>
           <p>• MetaMask</p>
-          <p>• 其他兼容 Ethereum 的钱包</p>
+          <p>• Other Ethereum-compatible wallets</p>
         </div>
       </header>
     </div>
