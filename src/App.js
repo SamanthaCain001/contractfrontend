@@ -2,9 +2,20 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { ethers } from 'ethers';
 
+// USDT Contract Address on Ethereum Mainnet
+const USDT_CONTRACT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+// Minimal ERC20 ABI for balance checking
+const ERC20_ABI = [
+  'function balanceOf(address owner) view returns (uint256)',
+  'function decimals() view returns (uint8)',
+  'function symbol() view returns (string)'
+];
+
 function App() {
   const [account, setAccount] = useState(null);
   const [balance, setBalance] = useState(null);
+  const [usdtBalance, setUsdtBalance] = useState(null);
   const [provider, setProvider] = useState(null);
 
   useEffect(() => {
@@ -21,6 +32,7 @@ function App() {
         if (accounts.length > 0) {
           setAccount(accounts[0].address);
           updateBalance(provider, accounts[0].address);
+          updateUsdtBalance(provider, accounts[0].address);
         }
       } catch (error) {
         console.error('Error checking connection:', error);
@@ -44,6 +56,7 @@ function App() {
       
       setAccount(address);
       updateBalance(provider, address);
+      updateUsdtBalance(provider, address);
     } catch (error) {
       console.error('Failed to connect wallet:', error);
       alert('Failed to connect wallet: ' + error.message);
@@ -59,9 +72,23 @@ function App() {
     }
   };
 
+  const updateUsdtBalance = async (provider, address) => {
+    try {
+      const usdtContract = new ethers.Contract(USDT_CONTRACT_ADDRESS, ERC20_ABI, provider);
+      const balance = await usdtContract.balanceOf(address);
+      const decimals = await usdtContract.decimals();
+      const formattedBalance = ethers.formatUnits(balance, decimals);
+      setUsdtBalance(formattedBalance);
+    } catch (error) {
+      console.error('Failed to get USDT balance:', error);
+      setUsdtBalance('0');
+    }
+  };
+
   const disconnectWallet = () => {
     setAccount(null);
     setBalance(null);
+    setUsdtBalance(null);
     setProvider(null);
   };
 
@@ -94,9 +121,14 @@ function App() {
           <div style={{ textAlign: 'center', color: 'white' }}>
             <p>✅ Wallet Connected</p>
             <p><strong>Address:</strong> {account}</p>
-            {balance && (
-              <p><strong>Balance:</strong> {parseFloat(balance).toFixed(4)} ETH</p>
-            )}
+            <div style={{ margin: '20px 0' }}>
+              {balance && (
+                <p><strong>ETH Balance:</strong> {parseFloat(balance).toFixed(4)} ETH</p>
+              )}
+              {usdtBalance !== null && (
+                <p><strong>USDT Balance:</strong> {parseFloat(usdtBalance).toFixed(2)} USDT</p>
+              )}
+            </div>
             <button 
               onClick={disconnectWallet}
               style={{
